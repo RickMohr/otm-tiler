@@ -14,6 +14,7 @@ def fetch(host, instance_id, x_min, x_max, y_min, y_max):
 
     def get_urls():
         url_recipe  = '{host}/tile/{buster}/database/otm/table/treemap_mapfeature/{zoom}/{x}/{y}.{format}?instance_id={instance_id}'
+        url_recipe += '&restrict=%5B%22Plot%22%2C%22RainGardenLA%22%2C%22RainBarrelLA%22%2C%22TurfConcreteGardenLA%22%5D'
         #url_recipe += '&restrict=%5B%22Plot%22%5D&q=%7B%22mapFeature.updated_at%22%3A%7B%22MIN%22%3A%222010-12-16%2000%3A00%3A00%22%2C%22MAX%22%3A%222015-12-16%2023%3A59%3A59%22%7D%7D'
 
         params = {
