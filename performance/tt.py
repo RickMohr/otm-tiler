@@ -10,31 +10,37 @@ def restart_tiler():
     sleep(10)
 
 def fetch(host, instance_id, x_min, x_max, y_min, y_max):
-    url_recipe  = '{host}/tile/{buster}/table/treemap_mapfeature/{zoom}/{x}/{y}.{format}?instance_id={instance_id}'
-    params = {
-        'host': host,
-        'instance_id': instance_id,
-        'buster': int(time()),
-        'zoom': 11
-    }
-    urls = []
     session = FuturesSession()
 
-    def make_urls(format):
-        for x in range(x_min, x_max + 1):
-            for y in range(y_min, y_max + 1):
-                urls.append(url_recipe.format(format=format, x=x, y=y, **params))
+    def get_urls():
+        url_recipe  = '{host}/tile/{buster}/database/otm/table/treemap_mapfeature/{zoom}/{x}/{y}.{format}?instance_id={instance_id}'
+        #url_recipe += '&restrict=%5B%22Plot%22%5D&q=%7B%22mapFeature.updated_at%22%3A%7B%22MIN%22%3A%222010-12-16%2000%3A00%3A00%22%2C%22MAX%22%3A%222015-12-16%2023%3A59%3A59%22%7D%7D'
 
-    make_urls('grid.json')
-    make_urls('png')
+        params = {
+            'host': host,
+            'instance_id': instance_id,
+            'buster': int(time()),
+            'zoom': 11
+        }
+        urls = []
 
-    print('Requesting %s tiles like %s' % (len(urls), urls[0]))
+        def make_urls(format):
+            for x in range(x_min, x_max + 1):
+                for y in range(y_min, y_max + 1):
+                    urls.append(url_recipe.format(format=format, x=x, y=y, **params))
+
+        make_urls('grid.json')
+        make_urls('png')
+        return urls
+
 
     def write(s):
         sys.stdout.write(s)
         sys.stdout.flush()
 
     def time_requests():
+        urls = get_urls()
+        print('Requesting %s tiles like %s' % (len(urls), urls[0]))
         restart_tiler()
         start = time()
         futures = [session.get(u) for u in urls]
@@ -55,6 +61,6 @@ def fetch(host, instance_id, x_min, x_max, y_min, y_max):
     print('\nAverage: {:.1f} sec'.format(average))
 
 
-fetch('http://localhost:4000', 21, 348, 354, 816, 819)
-#fetch('https://d9nki18bdqr9e.cloudfront.net', 21, 348, 354, 816, 819)
+#fetch('http://localhost:4000', 21, 348, 354, 816, 819)
+fetch('https://d1j3wq1j1c7z22.cloudfront.net', 21, 348, 354, 816, 819)  # staging
 
